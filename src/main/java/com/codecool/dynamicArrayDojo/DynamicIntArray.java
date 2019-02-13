@@ -4,40 +4,35 @@ package com.codecool.dynamicArrayDojo;
 public class DynamicIntArray {
 
     private int[] internalArray;
+    private int internalArraySize;
+    private boolean isEmpty;
 
     public DynamicIntArray() {
-        int defaultArraySize = 10;
-        initializeArrayWithDefaultInts(defaultArraySize);
+        this.internalArraySize = 1;
+        this.internalArray = new int[internalArraySize];
+        this.isEmpty = true;
     }
 
     public DynamicIntArray(int initialSize) {
-        initializeArrayWithDefaultInts(initialSize);
-    }
-
-    private void initializeArrayWithDefaultInts(int initialSize) {
-        this.internalArray = new int[initialSize + 1];
-        for (int index = 0; index <= initialSize; index++) {
-            this.internalArray[index] = index;
-        }
+        this.internalArraySize = initialSize;
+        this.internalArray = new int[this.internalArraySize];
+        this.isEmpty = true;
     }
 
     public void add(int number) {
-        if (internalArray[internalArray.length - 1] == 0) {
-            for (int i = 0; i < internalArray.length; i++) {
-                if (internalArray[i] == 0) {
-                    internalArray[i] = number;
-                    break;
-                }
-            }
+        if (this.internalArraySize == 1 && isEmpty) {
+            this.internalArray[0] = number;
+            this.isEmpty = false;
         } else {
-            int[] expandedInternalArray = new int[internalArray.length + 1];
-            for (int index = 0; index < internalArray.length; index++) {
-                expandedInternalArray[index] = internalArray[index];
+            int[] expandedInternalArray = new int[this.internalArraySize + 1];
+            for (int index = 0; index < this.internalArraySize; index++) {
+                expandedInternalArray[index] = this.internalArray[index];
             }
-            expandedInternalArray[internalArray.length] = number;
-            internalArray = expandedInternalArray;
-            expandedInternalArray = null;
+            expandedInternalArray[this.internalArraySize] = number;
+            this.internalArray = expandedInternalArray;
+            this.internalArraySize++;
         }
+
     }
 
     public void remove(int index) {
@@ -52,8 +47,8 @@ public class DynamicIntArray {
     public String toString() {
         String arrayRepresentation = "";
 
-        for(int number : internalArray) {
-            arrayRepresentation += " " + number;
+        for(int index = 0; index < this.internalArraySize; index++) {
+            arrayRepresentation += String.format(" %d", this.internalArray[index]);
         }
         return arrayRepresentation;
     }
