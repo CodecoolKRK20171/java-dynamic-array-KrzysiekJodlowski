@@ -35,8 +35,22 @@ public class DynamicIntArray {
 
     }
 
-    public void remove(int index) {
-
+    public void remove(int numberIndex) {
+        if (this.internalArraySize == 1 && numberIndex == 0) {
+            this.internalArray[0] = 0;
+            this.isEmpty = true;
+        } else {
+            int[] reducedInternalArray = new int[this.internalArraySize - 1];
+            for (int index = 0; index < this.internalArraySize; index++) {
+                if (index < numberIndex) {
+                    reducedInternalArray[index] = this.internalArray[index];
+                } else if (index > numberIndex){
+                    reducedInternalArray[index - 1] = this.internalArray[index];
+                }
+            }
+            this.internalArray = reducedInternalArray;
+            this.internalArraySize--;
+        }
     }
 
     public void insert(int index, int value) {
