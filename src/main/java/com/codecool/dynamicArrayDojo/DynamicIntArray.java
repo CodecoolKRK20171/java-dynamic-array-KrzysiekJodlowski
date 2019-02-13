@@ -7,17 +7,16 @@ public class DynamicIntArray {
 
     public DynamicIntArray() {
         int defaultArraySize = 10;
-        this.internalArray = new int[defaultArraySize];
-        fillArrayWithDefaultInts(defaultArraySize);
+        initializeArrayWithDefaultInts(defaultArraySize);
     }
 
     public DynamicIntArray(int initialSize) {
-        this.internalArray = new int[initialSize];
-        fillArrayWithDefaultInts(initialSize);
+        initializeArrayWithDefaultInts(initialSize);
     }
 
-    private void fillArrayWithDefaultInts(int initialSize) {
-        for (int index = 0; index < initialSize; index++) {
+    private void initializeArrayWithDefaultInts(int initialSize) {
+        this.internalArray = new int[initialSize + 1];
+        for (int index = 0; index <= initialSize; index++) {
             this.internalArray[index] = index;
         }
     }
@@ -35,10 +34,28 @@ public class DynamicIntArray {
             for (int index = 0; index < internalArray.length; index++) {
                 expandedInternalArray[index] = internalArray[index];
             }
-            expandedInternalArray[internalArray.length + 1] = number;
+            expandedInternalArray[internalArray.length] = number;
             internalArray = expandedInternalArray;
+            expandedInternalArray = null;
         }
+    }
 
+    public void remove(int index) {
+
+    }
+
+    public void insert(int index, int value) {
+
+    }
+
+    @Override
+    public String toString() {
+        String arrayRepresentation = "";
+
+        for(int number : internalArray) {
+            arrayRepresentation += " " + number;
+        }
+        return arrayRepresentation;
     }
 
 }
