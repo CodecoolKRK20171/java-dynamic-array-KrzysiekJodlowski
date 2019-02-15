@@ -78,12 +78,12 @@ public class DynamicIntArray {
 
     @Override
     public String toString() {
-        String arrayRepresentation = "";
+        StringBuilder dynamicArrayStringBuilder = new StringBuilder();
 
         for(int index = 0; index < this.internalArraySize; index++) {
-            arrayRepresentation += String.format(" %d", this.internalArray[index]);
+            dynamicArrayStringBuilder.append(String.format(" %d", this.internalArray[index]));
         }
-        return arrayRepresentation;
+        return dynamicArrayStringBuilder.toString();
     }
 
 }
