@@ -4,86 +4,122 @@ package com.codecool.dynamicArrayDojo;
 public class DynamicIntArray {
 
     private int[] internalArray;
-    private int internalArraySize;
+    private int currentSize;
     private boolean isEmpty;
+    private ArrayHandler arrayHandler;
 
+    private int initialSizeForEmptyArray = 10;
+    private int lastOccupiedIndex = -1;
+    private final int ZERO = 0;
+
+    /*
+    *   Constructors with helper method
+     */
     public DynamicIntArray() {
-        this.internalArraySize = 1;
-        this.internalArray = new int[internalArraySize];
-        this.isEmpty = true;
+        this.currentSize = this.initialSizeForEmptyArray;
+        initializeArrayWithHandler(this.currentSize);
     }
 
-    public DynamicIntArray(int initialSize) {
-        this.internalArraySize = initialSize;
-        this.internalArray = new int[this.internalArraySize];
-        this.isEmpty = true;
+    public DynamicIntArray(int customInitialSize) {
+        this.currentSize = customInitialSize;
+        initializeArrayWithHandler(this.currentSize);
     }
 
-    public void add(int value) {
-        if (this.internalArraySize == 1 && isEmpty) {
-            this.internalArray[0] = value;
+    private void initializeArrayWithHandler(int arraySize) {
+        this.internalArray = new int[arraySize];
+        this.isEmpty = true;
+        this.arrayHandler = new ArrayHandler();
+    }
+    
+    /*
+     *   Add, remove & insert methods
+     */
+    public boolean add(int value) {
+
+        if (isEmpty) {
             this.isEmpty = false;
         } else {
-            int[] expandedInternalArray = new int[this.internalArraySize + 1];
-            for (int index = 0; index < this.internalArraySize; index++) {
-                expandedInternalArray[index] = this.internalArray[index];
+            int freeSpaceCount = this.arrayHandler.getFreeSpaceCount(this.currentSize, this.lastOccupiedIndex);
+            if (freeSpaceCount <= this.ZERO) {
+                this.internalArray = this.arrayHandler.expandInternalArray(
+                        this.internalArray,
+                        this.currentSize,
+                        this.lastOccupiedIndex);
             }
-            expandedInternalArray[this.internalArraySize] = value;
-            this.internalArray = expandedInternalArray;
-            this.internalArraySize++;
         }
+
+        this.internalArray[++this.lastOccupiedIndex] = value;
+        return true;
     }
 
-    public void remove(int valueIndex) {
-        if (valueIndex >= this.internalArraySize) {
+    public int remove(int valueIndex) {
+
+        if (valueIndex > this.lastOccupiedIndex) {
             throw new ArrayIndexOutOfBoundsException("No such index in an array!");
         }
-        if (this.internalArraySize == 1 && valueIndex == 0) {
-            this.internalArray[0] = 0;
+
+        int zeroIndex = this.ZERO;
+        int removedItem = this.internalArray[zeroIndex];
+
+        if (this.lastOccupiedIndex == zeroIndex) {
+            this.internalArray[zeroIndex] = this.ZERO;
             this.isEmpty = true;
         } else {
-            int[] reducedInternalArray = new int[this.internalArraySize - 1];
-            for (int index = 0; index < this.internalArraySize; index++) {
-                if (index < valueIndex) {
-                    reducedInternalArray[index] = this.internalArray[index];
-                } else if (index > valueIndex){
-                    reducedInternalArray[index - 1] = this.internalArray[index];
-                }
-            }
-            this.internalArray = reducedInternalArray;
-            this.internalArraySize--;
+            this.internalArray = this.arrayHandler.resetInternalArrayWithoutItem(
+                    this.internalArray,
+                    this.currentSize,
+                    this.lastOccupiedIndex,
+                    valueIndex);
+            this.lastOccupiedIndex--;
         }
+
+        return removedItem;
     }
 
-    public void insert(int valueIndex, int value) {
+    public boolean insert(int valueIndex, int value) {
+
         if (isEmpty) {
-            this.internalArray[0] = value;
+            this.internalArray[this.ZERO] = value;
             this.isEmpty = false;
-        } else if (valueIndex >= this.internalArraySize) {
+            this.lastOccupiedIndex++;
+        } else if (valueIndex > this.lastOccupiedIndex) {
             this.add(value);
         } else {
-            int[] expandedInternalArray = new int[++this.internalArraySize];
-            for (int index = 0; index < this.internalArraySize; index++) {
-                if (index < valueIndex) {
-                    expandedInternalArray[index] = this.internalArray[index];
-                } else if (index == valueIndex) {
-                    expandedInternalArray[index] = value;
-                } else {
-                    expandedInternalArray[index] = this.internalArray[index - 1];
-                }
+            int freeSpaceCount = this.arrayHandler.getFreeSpaceCount(this.currentSize, this.lastOccupiedIndex);
+            if (freeSpaceCount <= this.ZERO) {
+                this.internalArray = this.arrayHandler.expandInternalArrayWithNewItem(
+                        this.internalArray,
+                        this.currentSize,
+                        this.lastOccupiedIndex,
+                        valueIndex,
+                        value);
+            } else {
+                this.internalArray = this.arrayHandler.resetInternalArrayWithNewItem(
+                        this.internalArray,
+                        this.currentSize,
+                        this.lastOccupiedIndex,
+                        valueIndex,
+                        value);
             }
-            this.internalArray = expandedInternalArray;
+            this.lastOccupiedIndex++;
         }
+
+        return true;
     }
 
+    /*
+     *   Other methods
+     */
     @Override
     public String toString() {
         StringBuilder dynamicArrayStringBuilder = new StringBuilder();
 
-        for(int index = 0; index < this.internalArraySize; index++) {
+        for(int index = this.ZERO; index <= this.lastOccupiedIndex; index++) {
             dynamicArrayStringBuilder.append(String.format(" %d", this.internalArray[index]));
         }
+
         return dynamicArrayStringBuilder.toString();
     }
 
 }
+
